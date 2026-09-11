@@ -14,7 +14,6 @@ except:
         API_KEY = os.getenv("GEMINI_API_KEY") or os.getenv("GOOGLE_API_KEY")
 
 client = genai.Client(api_key=API_KEY)
-
 TERMO = "Louveira"
 
 def buscar():
@@ -25,7 +24,7 @@ def buscar():
 def analisar(noticias):
     texto = "\n".join([f"{i}. {n['titulo']} - {n['link']}" for i, n in enumerate(noticias, 1)])
     prompt = f"Analise noticias sobre '{TERMO}':\n{texto}\nPara cada: resumo 1 frase + sentimento POSITIVO/NEGATIVO/NEUTRO. Final: Resumo Geral."
-    r = client.models.generate_content(model="gemini-1.5-flash", contents=prompt)
+    r = client.models.generate_content(model="gemini-2.0-flash", contents=prompt)
     return r.text
 
 st.set_page_config(page_title="PR Intel Louveira", page_icon="🗞️")
