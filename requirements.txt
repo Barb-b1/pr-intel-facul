@@ -1,0 +1,5 @@
+streamlit
+feedparser
+python-dotenv
+google-genai
+fpdf2
