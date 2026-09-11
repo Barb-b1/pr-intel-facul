@@ -1,43 +1,46 @@
+import streamlit as st
 import feedparser
 import os
-from dotenv import load_dotenv
 from google import genai
 
-load_dotenv()
-TERMO_BUSCA = "Louveira"
+try:
+    API_KEY = st.secrets["GEMINI_API_KEY"]
+except:
+    try:
+        API_KEY = st.secrets["GOOGLE_API_KEY"]
+    except:
+        from dotenv import load_dotenv
+        load_dotenv()
+        API_KEY = os.getenv("GEMINI_API_KEY") or os.getenv("GOOGLE_API_KEY")
 
-# Cliente novo do Google
-client = genai.Client(api_key=os.getenv("GEMINI_API_KEY"))
+client = genai.Client(api_key=API_KEY)
 
-def buscar_noticias(termo):
-    print(f"Buscando noticias sobre: {termo}...\n")
-    url = f"https://news.google.com/rss/search?q={termo}&hl=pt-BR&gl=BR&ceid=BR:pt-419"
+TERMO = "Louveira"
+
+def buscar():
+    url = f"https://news.google.com/rss/search?q={TERMO}&hl=pt-BR&gl=BR&ceid=BR:pt-419"
     feed = feedparser.parse(url)
-    noticias = []
-    for entry in feed.entries[:5]:
-        noticias.append({"titulo": entry.title, "link": entry.link})
-    return noticias
+    return [{"titulo": e.title, "link": e.link} for e in feed.entries[:5]]
 
-def analisar_com_ia(noticias):
-    print("Analisando com IA do Gemini 3.5...\n")
-    texto = ""
-    for i, n in enumerate(noticias, 1):
-        texto += f"{i}. {n['titulo']} - {n['link']}\n"
-    
-    prompt = f"Analise essas noticias sobre '{TERMO_BUSCA}':\n{texto}\nPara cada uma: resumo de 15 palavras e sentimento POSITIVO/NEGATIVO/NEUTRO. No final resumo geral de 2 linhas."
-    
-    # Modelo novo que o erro pediu
-    response = client.models.generate_content(
-        model="gemini-3.6-flash",
-        contents=prompt
-    )
-    return response.text
+def analisar(noticias):
+    texto = "\n".join([f"{i}. {n['titulo']} - {n['link']}" for i, n in enumerate(noticias, 1)])
+    prompt = f"Analise noticias sobre '{TERMO}':\n{texto}\nPara cada: resumo 1 frase + sentimento POSITIVO/NEGATIVO/NEUTRO. Final: Resumo Geral."
+    r = client.models.generate_content(model="gemini-1.5-flash", contents=prompt)
+    return r.text
 
-if __name__ == "__main__":
-    noticias = buscar_noticias(TERMO_BUSCA)
+st.set_page_config(page_title="PR Intel Louveira", page_icon="🗞️")
+st.title("🗞️ PR Intel - Louveira")
+st.write("Monitoramento com IA Gemini")
+
+if st.button("🔍 Analisar notícias agora"):
+    with st.spinner("Buscando..."):
+        noticias = buscar()
+    st.success(f"{len(noticias)} notícias encontradas!")
     for n in noticias:
-        print(f" - {n['titulo']}")
-    print("\n" + "="*40 + "\n")
-    analise = analisar_com_ia(noticias)
-    print(analise)
-    print("\nPRONTO! Parte 2 finalizada!")
+        st.write(f"- [{n['titulo']}]({n['link']})")
+    with st.spinner("Analisando com IA..."):
+        res = analisar(noticias)
+    st.subheader("🤖 Análise da IA")
+    st.markdown(res)
+else:
+    st.info("Clique no botão acima para começar")
