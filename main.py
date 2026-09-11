@@ -16,7 +16,7 @@ except:
 
 client = genai.Client(api_key=API_KEY)
 
-TERMO = "kpop"
+TERMO = "enfermagem"
 
 def buscar():
     url = f"https://news.google.com/rss/search?q={TERMO}&hl=pt-BR&gl=BR&ceid=BR:pt-419"
