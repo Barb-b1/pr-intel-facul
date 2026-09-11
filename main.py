@@ -29,8 +29,8 @@ def analisar(noticias):
     r = client.models.generate_content(model="gemini-1.5-flash", contents=prompt)
     return r.text
 
-st.set_page_config(page_title="PR Intel Louveira", page_icon="🗞️")
-st.title("🗞️ PR Intel - Louveira")
+st.set_page_config(page_title="PR Intel Monitoramento ", page_icon="🗞️")
+st.title("🗞️ PR Intel - Monitoramento")
 st.write("Monitoramento de notícias com IA Gemini")
 
 if st.button("🔍 Analisar notícias agora"):
