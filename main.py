@@ -3,6 +3,9 @@ import feedparser
 import os
 from google import genai
 
+st.set_page_config(page_title="PR Intel Louveira", page_icon="🗞️")
+st.title("🗞️ PR Intel - Louveira")
+
 try:
     API_KEY = st.secrets["GEMINI_API_KEY"]
 except:
@@ -24,12 +27,8 @@ def buscar():
 def analisar(noticias):
     texto = "\n".join([f"{i}. {n['titulo']} - {n['link']}" for i, n in enumerate(noticias, 1)])
     prompt = f"Analise noticias sobre '{TERMO}':\n{texto}\nPara cada: resumo 1 frase + sentimento POSITIVO/NEGATIVO/NEUTRO. Final: Resumo Geral."
-    r = client.models.generate_content(model="gemini-2.0-flash", contents=prompt)
+    r = client.models.generate_content(model="gemini-2.5-flash", contents=prompt)
     return r.text
-
-st.set_page_config(page_title="PR Intel Louveira", page_icon="🗞️")
-st.title("🗞️ PR Intel - Louveira")
-st.write("Monitoramento com IA Gemini")
 
 if st.button("🔍 Analisar notícias agora"):
     with st.spinner("Buscando..."):
