@@ -7,7 +7,7 @@ st.title("📊 PR-Intel | Louveira")
 st.write("Monitor de imagem da Prefeitura em tempo real com IA Gemini 3.6")
 
 genai.configure(api_key=st.secrets["GEMINI_API_KEY"])
-model = genai.GenerativeModel("gemini-1.5-flash")
+model = genai.GenerativeModel("gemini-2.0-flash-lite")
 
 if st.button("🔍 Buscar Notícias Agora"):
     with st.spinner("Buscando..."):
